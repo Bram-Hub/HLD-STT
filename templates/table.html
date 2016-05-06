@@ -1,0 +1,22 @@
+{% include 'header.html' %}
+Logical Formulas:<br />
+{{ form }}
+<br /><br />
+<br />
+
+{% if contradiction %}
+    Contradiction found on step {{ step }} in {{ parent_formula }} as tried to set {{ formula }} as {{ formula_truth }}
+{% else %}
+    No contradiction was found. Argument is invalid!
+{% endif %}
+<br /><br />
+
+{% for i in range(formulas|length) %}
+<div class="formula">
+    {{ formulas[i] }}<br />
+    {{ truths[i] }}
+</div><br />
+{% endfor %}
+<br />
+<br />
+{% include 'footer.html' %}
