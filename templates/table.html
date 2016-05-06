@@ -5,9 +5,17 @@ Logical Formulas:<br />
 <br />
 
 {% if contradiction %}
-    Contradiction found on step {{ step }} in {{ parent_formula }} as tried to set {{ formula }} as {{ formula_truth }}
+    Contradiction found on trying step {{ step }} for {{ parent_formula }} when trying to set {{ formula }}
+    to {{ formula_truth }} as it was already {{ actual_truth }}
 {% else %}
-    No contradiction was found. Argument is invalid!
+    {% if symbols|length == 0 %}
+        No contradiction was found. Argument is invalid!
+    {% else %}
+        Short Truth Table method has gotten stuck! Cannot proceed forward. Use a truth tree or guess values for:<br />
+        {% for symbol in symbols %}
+            {{ symbol }}<br />
+        {% endfor %}
+    {% endif %}
 {% endif %}
 <br /><br />
 

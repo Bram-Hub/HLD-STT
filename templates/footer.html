@@ -1,1 +1,9 @@
+<script type="text/javascript">
+    $('.truth').hover(function() {
+        $(this).parent().append("<span id='aaa' style='position: absolute; margin-left: 20px;'>" + $(this).attr('id') + "</span>");
+    },
+    function() {
+        $('#aaa').remove();
+    });
+</script>
 </body>

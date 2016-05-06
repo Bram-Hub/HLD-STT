@@ -49,7 +49,7 @@ def runner(formulas, goal):
     for formula in formulas:
         formula = formula.strip()
         if len(formula) == 0:
-            pass
+            continue
         parsed_formulas.append(forseti.parser.parse(formula))
 
     goal = forseti.parser.parse(goal)
@@ -124,7 +124,7 @@ class ShortTruthTableFormula(object):
         when possible and then up and right as necessary
         :return:
         """
-        values = [self.truth_value]
+        values = [[self.truth_value, self.number]]
         if len(self.children) == 1:
             values.extend(self.children[0].get_connective_values())
         elif len(self.children) == 2:
@@ -205,11 +205,12 @@ class ShortTruthTable(object):
             print("Contradiction trying to set " + str(e.formula.formula) + " as " + str(not e.formula.truth_value) \
                   + " on step " + str(self.count))
 
+        self.unfulled_symbols = []
         if not self.contradiction:
             print("No contradiction found. Invalid argument.")
             for symbol in self.symbols:
                 if symbol.truth_value is None:
-                    print("Symbol " + symbol.symbol + "has no Truth Value")
+                    self.unfulled_symbols.append(symbol)
 
     def break_apart_formulas(self):
         """
@@ -275,23 +276,25 @@ class ShortTruthTable(object):
                 child_idx = i
                 break
 
+        other_idx = 0 if child_idx == 1 else 1
+        
         if isinstance(formula.formula, Not):
             self.set_truth_value(formula, not child.truth_value)
         elif isinstance(formula.formula, And):
             if child.truth_value is False:
                 self.set_truth_value(formula, False)
             elif child.truth_value is True:
-                if formula.children[(child_idx % 1)].truth_value is True:
+                if formula.children[other_idx].truth_value is True:
                     self.set_truth_value(formula, True)
-                elif formula.children[(child_idx % 1)].truth_value is False:
+                elif formula.children[other_idx].truth_value is False:
                     self.set_truth_value(formula, False)
         elif isinstance(formula.formula, Or):
             if child.truth_value is True:
                 self.set_truth_value(formula, True)
             elif child.truth_value is False:
-                if formula.children[(child_idx % 1)].truth_value is True:
+                if formula.children[other_idx].truth_value is True:
                     self.set_truth_value(formula, True)
-                elif formula.children[(child_idx % 1)].truth_value is False:
+                elif formula.children[other_idx].truth_value is False:
                     self.set_truth_value(formula, False)
         elif isinstance(formula.formula, If):
             if child_idx == 1:
@@ -309,12 +312,11 @@ class ShortTruthTable(object):
                 elif child.truth_value is True and formula.children[1].truth_value is True:
                     self.set_truth_value(formula, True)
         elif isinstance(formula.formula, Iff):
-            if child.truth_value is not None and child.truth_value == formula.children[(child_idx % 1)].truth_value:
+            if child.truth_value is not None and child.truth_value == formula.children[other_idx].truth_value:
                 self.set_truth_value(formula, True)
-            elif child.truth_value is not None and formula.children[(child_idx % 1)] is not None \
-                    and child.truth_value != formula.children[(child_idx % 1)].truth_value:
+            elif child.truth_value is not None and formula.children[other_idx] is not None \
+                    and child.truth_value != formula.children[other_idx].truth_value:
                 self.set_truth_value(formula, False)
-
 
     def update_symbol(self, formula, symbol):
         """
