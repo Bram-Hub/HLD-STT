@@ -202,12 +202,9 @@ class ShortTruthTable(object):
             while formula.parent is not None:
                 formula = formula.parent
             self.contradiction_parent = formula
-            print("Contradiction trying to set " + str(e.formula.formula) + " as " + str(not e.formula.truth_value) \
-                  + " on step " + str(self.count))
 
         self.unfulled_symbols = []
         if not self.contradiction:
-            print("No contradiction found. Invalid argument.")
             for symbol in self.symbols:
                 if symbol.truth_value is None:
                     self.unfulled_symbols.append(symbol)
@@ -465,7 +462,13 @@ class ShortTruthTable(object):
 
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser(description="Generate Truth Table for a logical formula")
-    PARSER.add_argument('formulas', metavar='formula', type=str, nargs="+", help='Logical formula')
+    PARSER.add_argument('formulas', metavar='formula', type=str, nargs="*", help='Logical formula')
     PARSER.add_argument('goal', metavar='goal', type=str, help='Goal Formula')
     PARSER_ARGS = PARSER.parse_args()
     SHORT_TRUTH_TABLE = runner(PARSER_ARGS.formulas, PARSER_ARGS.goal)
+    if SHORT_TRUTH_TABLE.contradiction:
+        print("Contradiction trying to set " + str(SHORT_TRUTH_TABLE.contradiction_formula) + " as " +
+              str(not SHORT_TRUTH_TABLE.contradiction_formula.truth_value) + " on step " +
+              str(SHORT_TRUTH_TABLE.count))
+    else:
+        print("No contradiction found. Invalid argument.")
